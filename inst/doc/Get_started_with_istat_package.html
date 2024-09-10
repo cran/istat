@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Alissa Lelli, Elena Gradi" />
+
+
+<title>Get started with istat package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore"><span style="color:navy">Get started with
+istat package</span></h1>
+<h4 class="author">Alissa Lelli, Elena Gradi</h4>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(istat)</span></code></pre></div>
+<div id="r-introduction" class="section level2">
+<h2><span style="color:navy">R Introduction</span></h2>
+<p><em>istat</em> package allows you to obtain data from
+<strong>Istat</strong> databases within R environment. As of September
+2024, there are 2 sources of data: <strong><em>I.Stat</em></strong> and
+<strong><em>IstatData</em></strong>. Istat is replacing <em>I.Stat</em>
+with <em>IstatData</em> platform, but <em>I.Stat</em> can still be used
+as a source. Searching and downloading data sets from the new platform
+allows you to have access to more data sets (they can be found at <a href="https://esploradati.istat.it/databrowser/" class="uri">https://esploradati.istat.it/databrowser/</a>). This package
+allows you to search, get, filter and plot data sets. It will follow the
+explanation of provider related functions, then the explanation of
+filter and plot functions and lastly
+<strong><em>shinyIstat</em></strong> will be introduced.</p>
+<p>Note that, when using <em>get_i_stat</em> or <em>get_istatdata</em>,
+the function may take some time to download datasets.</p>
+</div>
+<div id="i.stat" class="section level2">
+<h2><span style="color:navy">I.Stat</span></h2>
+<p><strong><em>I.Stat</em></strong> is the old Istat data warehouse that
+is still accessible. Functions that retrieve data from <em>I.Stat</em>
+end with <em>i_stat</em>. Available functions are:</p>
+<ul>
+<li><p><em>list_i_stat</em></p></li>
+<li><p><em>search_i_stat</em></p></li>
+<li><p><em>get_i_stat</em></p></li>
+</ul>
+<div id="list_i_stat" class="section level3">
+<h3><span style="color:navy">list_i_stat</span></h3>
+<p>This function allows you to obtain the complete list of available
+I.Stat data, with their ID and name. Default language is Italian
+(“ita”), but you can also select English as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">list_i_stat</span>(<span class="at">lang =</span> <span class="st">&quot;eng&quot;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; [rsdmx][INFO] Fetching &#39;http://sdmx.istat.it/SDMXWS/rest/dataflow/all/all/latest/&#39; </span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;        ID                                                        Name</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; 1 101_1015                                                       Crops</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 2 101_1030                           PDO, PGI and TSG quality products</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 3 101_1033                                                slaughtering</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 4 101_1039                                Agritourism - municipalities</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; 5 101_1077 PDO, PGI and TSG products:  operators - municipalities data</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 6   101_12                                         Agricoltural prices</span></span></code></pre></div>
+<p>If you find the data that you were looking for, take note of its
+<strong>ID</strong>: you will need it to download it through
+<em>get_i_stat</em>.</p>
+</div>
+<div id="search_i_stat" class="section level3">
+<h3><span style="color:navy">search_i_stat</span></h3>
+<p>If you are looking for a specific data set, you can search it by
+keywords. Let’s suppose you are looking for data about ‘water’. You can
+search it as follows (as before, default language is Italian) as
+follows:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">search_i_stat</span>(<span class="st">&quot;water&quot;</span>, <span class="at">lang =</span> <span class="st">&quot;eng&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;[rsdmx][INFO] Fetching &#39;http://sdmx.istat.it/SDMXWS/rest/dataflow/all/all/latest/&#39; </span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;      id       name                                 </span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;12_323&quot; &quot;Urban wastewater treatment plants&quot;  </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;12_340&quot; &quot;Water abstraction for drinkable use&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;12_60&quot;  &quot;Public water supply use&quot; </span></span></code></pre></div>
+<p>You decide that you want to download “<em>Public water supply
+use</em>” data set. You will need its <strong>id</strong>, which is
+“<em>12_60</em>”, and will be used as an example.</p>
+</div>
+<div id="get_i_stat" class="section level3">
+<h3><span style="color:navy">get_i_stat</span></h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">get_i_stat</span>(<span class="at">id_dataset =</span> <span class="st">&quot;12_60&quot;</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>           <span class="at">start_period =</span> <span class="cn">NULL</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>           <span class="at">end_period =</span> <span class="cn">NULL</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>           <span class="at">recent =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>           <span class="at">csv =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>           <span class="at">xlsx =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>           <span class="at">lang =</span> <span class="st">&quot;both&quot;</span>)</span></code></pre></div>
+<p>This code downloads the entire data set, without any filter, but you
+can customize it through the parameters of the function:</p>
+<ul>
+<li><p><strong><em>id_dataset</em></strong>: data set
+<strong>id</strong> found through <em>list_i_stat</em> or
+<em>search_i_stat</em>.</p></li>
+<li><p><strong><em>start_period</em></strong>: time value for the start
+(NULL by default).</p></li>
+<li><p><strong><em>end_period</em></strong>: time value for the end
+(NULL bu default).</p></li>
+<li><p><strong><em>recent</em></strong>: false by default, if TRUE, the
+function retrieves data from last 10 years.</p></li>
+<li><p><strong><em>csv</em></strong> or <strong><em>xlsx</em></strong>:
+false by default, if TRUE, the function saves the data set to directory
+as .csv/.xlsx.</p></li>
+<li><p><strong><em>lang</em></strong>: language parameter for labels
+(“ita” for Italian, “eng” for English).</p></li>
+</ul>
+<p>Note that if <em>recent</em> is TRUE, then both <em>start_period</em>
+and <em>end_period</em> has to be NULL, and viceversa.</p>
+</div>
+</div>
+<div id="istatdata" class="section level2">
+<h2><span style="color:navy">IstatData</span></h2>
+<p><strong><em>IstatData</em></strong> is the new Istat data warehouse.
+Functions that retrieve data from <em>IstatData</em> end with
+<em>_istatdata</em>. Available functions are:</p>
+<ul>
+<li><p><em>list_istatdata</em></p></li>
+<li><p><em>search_istatdata</em></p></li>
+<li><p><em>get_istatdata</em></p></li>
+</ul>
+<p>Notice that in this first version data set are retrieved through URL.
+For this reason, <em>list_istatdata</em> and <em>search_istatdata</em>
+will provide <em>agencyId</em> and <em>version</em> in addition to
+<em>ID</em> and <em>name</em>, that will be needed to download a data
+set through <em>get_istatdata</em>.</p>
+<div id="list_istatdata" class="section level3">
+<h3><span style="color:navy">list_istatdata</span></h3>
+<p>This function allows you to obtain the complete list of available
+<em>IstatData</em> data, with their <em>agencyID</em>, <em>ID,
+version</em> and <em>name</em>. Default language is Italian (“ita”), but
+you can also select English as follows:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">list_istatdata</span>(<span class="at">lang =</span> <span class="st">&quot;eng&quot;</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt;   agencyId                               ID version                                   Name</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; 1      IT1                         101_1015     1.0                                  Crops</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; 2      IT1  101_1015_DF_DCSP_COLTIVAZIONI_1     1.0              Areas and production -...</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; 3      IT1 101_1015_DF_DCSP_COLTIVAZIONI_10     1.0                        Sowing forecast</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; 4      IT1  101_1015_DF_DCSP_COLTIVAZIONI_2     1.0             Areas and production - ...</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; 5      IT1                         101_1030     1.0      PDO, PGI and TSG quality products</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; 6      IT1        101_1030_DF_DCSP_DOPIGP_1     1.0                    Operators by sector</span></span></code></pre></div>
+<p>If you find the data that you were looking for, take note of its
+<strong><em>agencyId</em></strong>, <strong><em>ID</em></strong> and
+<strong><em>version</em></strong>: you will need them to download it
+through <em>get_istatdata</em>.</p>
+</div>
+<div id="search_istatdata" class="section level3">
+<h3><span style="color:navy">search_istatdata</span></h3>
+<p>If you are looking for a specific data set, you can search it by
+keywords. Let’s suppose you are looking for data about ‘water’. You can
+search it as follows (as before, default language is Italian) as
+follows:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">search_istatdata</span>(<span class="st">&quot;water&quot;</span>, <span class="at">lang =</span> <span class="st">&quot;eng&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;      agencyId       id                   version   name</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; [1,] &quot;IT1&quot; &quot;12_323_DF_DCCV_IMPDEP_1&quot;        &quot;1.0&quot; &quot;Urban wastewater treatment plants(...)&quot;</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; [2,] &quot;IT1&quot; &quot;12_323_DF_DCCV_IMPDEP_2&quot;        &quot;1.0&quot; &quot;Urban wastewater treatment plants(...)&quot; </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; [3,] &quot;IT1&quot; &quot;12_340_DF_DCCV_PRELACQ_1&quot;       &quot;1.0&quot; &quot;Water abstraction for drinkable use&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; [4,] &quot;IT1&quot; &quot;12_60_DF_DCCV_CONSACQUA_2&quot;      &quot;1.0&quot; &quot;Public water supply use(...)&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; [5,] &quot;IT1&quot; &quot;18_635_DF_DCCV_CENERG_8&quot;        &quot;1.0&quot; &quot;Water system-availability (...)&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; [6,] &quot;IT1&quot; &quot;18_635_DF_DCCV_CENERG_9&quot;        &quot;1.0&quot; &quot;Water system-Type (...)&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; [7,] &quot;IT1&quot; &quot;609_1_DF_DCCV_URBANENV_1&quot;       &quot;1.0&quot; &quot;Water - consumption&quot; </span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; [8,] &quot;IT1&quot; &quot;609_1_DF_DCCV_URBANENV_2&quot;       &quot;1.0&quot; &quot;Water - rationing&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; [9,] &quot;IT1&quot; &quot;82_87_DF_DCCV_AVQ_FAMIGLIE_19&quot;  &quot;1.0&quot; &quot;House costs, water and other (...)&quot; </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;[10,] &quot;IT1&quot; &quot;83_85_DF_DCCV_AVQ_PERSONE1_211&quot; &quot;1.0&quot; &quot;Water and carbonate beverages (...)&quot;</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;[11,] &quot;IT1&quot; &quot;83_85_DF_DCCV_AVQ_PERSONE1_212&quot; &quot;1.0&quot; &quot;Water and carbonate beverages (...)&quot;</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;[12,] &quot;IT1&quot; &quot;83_85_DF_DCCV_AVQ_PERSONE1_213&quot; &quot;1.0&quot; &quot;Water and carbonate beverages (...)&quot;</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;[13,] &quot;IT1&quot; &quot;83_85_DF_DCCV_AVQ_PERSONE1_214&quot; &quot;1.0&quot; &quot;Water and carbonate beverages (...)&quot;</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;[14,] &quot;IT1&quot; &quot;9_951_DF_DCCV_CAVE_MIN_4&quot;       &quot;1.0&quot; &quot;Natural mineral waters extracted (...)&quot;</span></span></code></pre></div>
+<p>You decide that you want to download “<em>Public water supply use -
+municipalities</em>” data set. You will need its
+<strong><em>agencyId</em></strong>, <strong><em>id</em></strong> and
+<strong><em>version</em></strong>, which are, respectively,
+<em>“IT1”</em>, <em>“12_60_DF_DCCV_CONSACQUA_2”</em>, and <em>“1.0”</em>
+(this data set will be used as an example).</p>
+</div>
+<div id="get_istatdata" class="section level3">
+<h3><span style="color:navy">get_istatdata</span></h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">get_istatdata</span>(<span class="at">agencyId =</span> <span class="st">&quot;IT1&quot;</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>              <span class="at">dataset_id =</span> <span class="st">&quot;12_60_DF_DCCV_CONSACQUA_2&quot;</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>              <span class="at">version =</span> <span class="st">&quot;1.0&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>              <span class="at">start =</span> <span class="cn">NULL</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>              <span class="at">end =</span> <span class="cn">NULL</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>              <span class="at">recent =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>              <span class="at">csv =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>              <span class="at">xlsx =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>This code downloads the entire data set, without any filter, but you
+can customize it through the parameters of the function:</p>
+<ul>
+<li><p><strong><em>agencyId</em></strong>,
+<strong><em>dataset_id</em></strong> and
+<strong><em>version</em></strong>: data set parameters that can be found
+through <em>list_istatdata</em> or <em>search_istatdata</em>.</p></li>
+<li><p><strong><em>start</em></strong>: time value for the start (NULL
+by default).</p></li>
+<li><p><strong><em>endì</em></strong>: time value for the end (NULL bu
+default).</p></li>
+<li><p><strong><em>recent</em></strong>: false by default, if TRUE, the
+function retrieves data from last 10 years.</p></li>
+<li><p><strong><em>csv</em></strong> or <strong><em>xlsx</em></strong>:
+false by default, if TRUE, the function saves the data set to directory
+as .csv/.xlsx.</p></li>
+</ul>
+<p>Note that if <em>recent</em> is TRUE, then both <em>start_period</em>
+and <em>end_period</em> has to be NULL, and viceversa. Moreover, “lang”
+parameter can’t be specified, since this version of the package can’t
+retrieve IstatData data sets’ labels.</p>
+</div>
+</div>
+<div id="filter-your-data" class="section level2">
+<h2><span style="color:navy">Filter your data</span></h2>
+<p>The package offers you the possibility to filter data set through the
+function filter_istat; filter_istat_interactive is the same function but
+interactive. To show how they work, we will use ‘iris’ data.</p>
+<div id="filter_istat" class="section level3">
+<h3><span style="color:navy">filter_istat</span></h3>
+<p>You can filter a data set by selecting the <em>column(s)</em> to
+filter, and then selecting for which value of the column to filter the
+data set through <em>datatype</em>. In this example, we filtered for one
+column:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">filter_istat</span>(iris, <span class="at">columns =</span> <span class="st">&quot;Species&quot;</span>, <span class="at">datatype =</span> <span class="st">&quot;setosa&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;    Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; 1           5.1         3.5          1.4         0.2  setosa</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; 2           4.9         3.0          1.4         0.2  setosa</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 3           4.7         3.2          1.3         0.2  setosa</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 4           4.6         3.1          1.5         0.2  setosa</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 5           5.0         3.6          1.4         0.2  setosa</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 6           5.4         3.9          1.7         0.4  setosa</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;  ... </span></span></code></pre></div>
+<p>Now, let’s filter for more than one column:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">filter_istat</span>(iris, <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">&quot;Species&quot;</span>, <span class="st">&quot;Petal.Length&quot;</span>), <span class="at">datatype =</span> <span class="fu">c</span>(<span class="st">&quot;setosa&quot;</span>, <span class="st">&quot;1.5&quot;</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; 4           4.6         3.1          1.5         0.2  setosa</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; 8           5.0         3.4          1.5         0.2  setosa</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; 10          4.9         3.1          1.5         0.1  setosa</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; 11          5.4         3.7          1.5         0.2  setosa</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; 16          5.7         4.4          1.5         0.4  setosa</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; 20          5.1         3.8          1.5         0.3  setosa</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; 22          5.1         3.7          1.5         0.4  setosa</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; 28          5.2         3.5          1.5         0.2  setosa</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; 32          5.4         3.4          1.5         0.4  setosa</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; 33          5.2         4.1          1.5         0.1  setosa</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; 35          4.9         3.1          1.5         0.2  setosa</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; 40          5.1         3.4          1.5         0.2  setosa</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; 49          5.3         3.7          1.5         0.2  setosa</span></span></code></pre></div>
+<p>And for more than one value per column:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">filter_istat</span>(iris, <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">&quot;Species&quot;</span>,<span class="st">&quot;Petal.Width&quot;</span>),  <span class="at">datatype =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="st">&quot;virginica&quot;</span>,<span class="st">&quot;setosa&quot;</span>), <span class="fu">c</span>(<span class="st">&quot;0.1&quot;</span>,<span class="st">&quot;1.9&quot;</span>)))</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;     Sepal.Length Sepal.Width Petal.Length Petal.Width   Species</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 10           4.9         3.1          1.5         0.1    setosa</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 13           4.8         3.0          1.4         0.1    setosa</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 14           4.3         3.0          1.1         0.1    setosa</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 33           5.2         4.1          1.5         0.1    setosa</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 38           4.9         3.6          1.4         0.1    setosa</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; 102          5.8         2.7          5.1         1.9 virginica</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; 112          6.4         2.7          5.3         1.9 virginica</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; 131          7.4         2.8          6.1         1.9 virginica</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; 143          5.8         2.7          5.1         1.9 virginica</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; 147          6.3         2.5          5.0         1.9 virginica</span></span></code></pre></div>
+<p>Here, the function filtered the data set ‘iris’ for the values
+‘virginica’ and ‘setosa’ of the column ‘Species’ and for the values
+‘0.1’ and ‘1.9’ of the column ‘Petal.Width’.</p>
+</div>
+<div id="filter_istat_interactive" class="section level3">
+<h3><span style="color:navy">filter_istat_interactive</span></h3>
+<p>This function works the same as the previous one, with the difference
+that in this case you will be guided through the filtering process. An
+example:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">filter_istat_interactive</span>(iris, <span class="at">lang =</span> <span class="st">&quot;eng&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; Available columns:</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     </span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; Enter the column(s) (separated by comma): Petal.Width, Species</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Available values for column Petal.Width :</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;  [1] 0.2 0.4 0.3 0.1 0.5 0.6 1.4 1.5 1.3 1.6 1.0 1.1 1.8 1.2 1.7 2.5 1.9 2.1 2.2 2.0 2.4 2.3</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; Enter the chosen values for column Petal.Width (separated by comma): 0.1</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; Available values for column Species :</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; [1] setosa     versicolor virginica </span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; Levels: setosa versicolor virginica</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; Enter the chosen values for column Species (separated by comma): setosa</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;    Sepal.Length Sepal.Width Petal.Length Petal.Width Species</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; 10          4.9         3.1          1.5         0.1  setosa</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; 13          4.8         3.0          1.4         0.1  setosa</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; 14          4.3         3.0          1.1         0.1  setosa</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; 33          5.2         4.1          1.5         0.1  setosa</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; 38          4.9         3.6          1.4         0.1  setosa</span></span></code></pre></div>
+</div>
+</div>
+<div id="plot-your-data" class="section level2">
+<h2><span style="color:navy">Plot your data</span></h2>
+<p>The function <strong><em>plot_interactive</em></strong> allows you to
+graphically visualize your data, and it is intended to be use with
+exploratory purposes only. The available plots are:</p>
+<ul>
+<li><p><strong><em>scatter plot</em></strong></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot_interactive</span>(iris)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; &gt; plot_interactive(iris)</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; Available plots:</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; 1: Scatter Plot</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 2: Bar plot</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 3: Pie chart</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; Choose type of plot (1, 2 or 3): 1</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; Available variables:</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     </span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; Variable X (insert name): Sepal.Length</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; Variable Y (insert name): Sepal.Width</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; Grouping variable (optional, press enter if not necessary): Species</span></span></code></pre></div></li>
+<li><p><strong><em>bar plot</em></strong></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">plot_interactive</span>(iris)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; Available plots:</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; 1: Scatter Plot</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; 2: Bar plot</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; 3: Pie chart</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; Choose type of plot (1, 2 or 3): 2</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; Available variables:</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     </span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; Variable X (insert name): Species</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; Variable Y (insert name): Petal.Length</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; Grouping variable (optional, press enter if not necessary): </span></span></code></pre></div></li>
+<li><p><strong><em>pie chart</em></strong></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">plot_interactive</span>(iris)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; Available plots:</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; 1: Scatter Plot</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; 2: Bar plot</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; 3: Pie chart</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; Choose type of plot (1, 2 or 3): 3</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; Available variables:</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot;  &quot;Species&quot;     </span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Choose the variable for pie chart: Species</span></span></code></pre></div></li>
+</ul>
+</div>
+<div id="shinyistat" class="section level2">
+<h2><span style="color:navy">shinyIstat</span></h2>
+<p><strong><em>shinyIstat</em></strong> is a shiny application which
+integrates the functions of the <em>istat</em> package in a user
+friendly interface. This app aims to provide a useful tool to search,
+get, filter and plot those data sets. Here are the main features:</p>
+<ul>
+<li><p><strong>List</strong> available data sets or search for data sets
+using keywords by selecting <strong>Available datasets</strong> in the
+sidebar. You can choose to use <em>I.Stat</em> or <em>IstatData</em> as
+the source.</p></li>
+<li><p><strong>Download</strong> data sets by providing an <em>ID</em>
+and selecting a date range in <strong>Get dataset</strong>. You can
+choose to use <em>I.Stat</em> or <em>IstatData</em> as the
+source.</p></li>
+<li><p><strong>Filter</strong> data sets by selecting
+<strong>Filter</strong>. You can upload a <em>.xlsx</em> file or select
+a data set from the environment.</p></li>
+<li><p><strong>Visualize</strong> data by selecting
+<strong>Plots</strong>. You can choose between <em>scatter plot</em>,
+<em>bar plot</em> and <em>pie chart</em>. Note that this function it’s
+intended to be used with exploratory purpose only.</p></li>
+</ul>
+<p>Use the menu on the left to navigate through the app. Inside each
+panel you will find further help by simply clicking on the green
+question marks <span style="color:green"><strong>?</strong></span>.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

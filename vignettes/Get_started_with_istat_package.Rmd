@@ -1,0 +1,342 @@
+---
+title: <span style="color:navy">Get started with istat package</span>
+author: "Alissa Lelli, Elena Gradi"
+output:   
+    rmarkdown::html_vignette:
+    toc: true         
+    toc_depth: 2  
+vignette: >
+  %\VignetteIndexEntry{Get started with istat package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(istat)
+```
+
+## [R Introduction]{style="color:navy"}
+
+*istat* package allows you to obtain data from **Istat** databases within R environment. As of September 2024, there are 2 sources of data: ***I.Stat*** and ***IstatData***. Istat is replacing *I.Stat* with *IstatData* platform, but *I.Stat* can still be used as a source. Searching and downloading data sets from the new platform allows you to have access to more data sets (they can be found at <https://esploradati.istat.it/databrowser/>). This package allows you to search, get, filter and plot data sets. It will follow the explanation of provider related functions, then the explanation of filter and plot functions and lastly ***shinyIstat*** will be introduced.
+
+Note that, when using *get_i_stat* or *get_istatdata*, the function may take some time to download datasets.
+
+## [I.Stat]{style="color:navy"}
+
+***I.Stat*** is the old Istat data warehouse that is still accessible. Functions that retrieve data from *I.Stat* end with *i_stat*. Available functions are:
+
+-   *list_i_stat*
+
+-   *search_i_stat*
+
+-   *get_i_stat*
+
+### [list_i_stat]{style="color:navy"}
+
+This function allows you to obtain the complete list of available I.Stat data, with their ID and name. Default language is Italian ("ita"), but you can also select English as follows:
+
+``` r
+head(list_i_stat(lang = "eng"))
+
+#> [rsdmx][INFO] Fetching 'http://sdmx.istat.it/SDMXWS/rest/dataflow/all/all/latest/' 
+#>        ID                                                        Name
+#> 1 101_1015                                                       Crops
+#> 2 101_1030                           PDO, PGI and TSG quality products
+#> 3 101_1033                                                slaughtering
+#> 4 101_1039                                Agritourism - municipalities
+#> 5 101_1077 PDO, PGI and TSG products:  operators - municipalities data
+#> 6   101_12                                         Agricoltural prices
+```
+
+If you find the data that you were looking for, take note of its **ID**: you will need it to download it through *get_i_stat*.
+
+### [search_i_stat]{style="color:navy"}
+
+If you are looking for a specific data set, you can search it by keywords. Let's suppose you are looking for data about 'water'. You can search it as follows (as before, default language is Italian) as follows:
+
+``` r
+search_i_stat("water", lang = "eng")
+
+#>[rsdmx][INFO] Fetching 'http://sdmx.istat.it/SDMXWS/rest/dataflow/all/all/latest/' 
+#>      id       name                                 
+#> [1,] "12_323" "Urban wastewater treatment plants"  
+#> [2,] "12_340" "Water abstraction for drinkable use"
+#> [3,] "12_60"  "Public water supply use" 
+```
+
+You decide that you want to download "*Public water supply use*" data set. You will need its **id**, which is "*12_60*", and will be used as an example.
+
+### [get_i_stat]{style="color:navy"}
+
+``` r
+get_i_stat(id_dataset = "12_60",
+           start_period = NULL,
+           end_period = NULL,
+           recent = FALSE,
+           csv = FALSE,
+           xlsx = FALSE,
+           lang = "both")
+```
+
+This code downloads the entire data set, without any filter, but you can customize it through the parameters of the function:
+
+-   ***id_dataset***: data set **id** found through *list_i_stat* or *search_i_stat*.
+
+-   ***start_period***: time value for the start (NULL by default).
+
+-   ***end_period***: time value for the end (NULL bu default).
+
+-   ***recent***: false by default, if TRUE, the function retrieves data from last 10 years.
+
+-   ***csv*** or ***xlsx***: false by default, if TRUE, the function saves the data set to directory as .csv/.xlsx.
+
+-   ***lang***: language parameter for labels ("ita" for Italian, "eng" for English).
+
+Note that if *recent* is TRUE, then both *start_period* and *end_period* has to be NULL, and viceversa.
+
+## [IstatData]{style="color:navy"}
+
+***IstatData*** is the new Istat data warehouse. Functions that retrieve data from *IstatData* end with *\_istatdata*. Available functions are:
+
+-   *list_istatdata*
+
+-   *search_istatdata*
+
+-   *get_istatdata*
+
+Notice that in this first version data set are retrieved through URL. For this reason, *list_istatdata* and *search_istatdata* will provide *agencyId* and *version* in addition to *ID* and *name*, that will be needed to download a data set through *get_istatdata*.
+
+### [list_istatdata]{style="color:navy"}
+
+This function allows you to obtain the complete list of available *IstatData* data, with their *agencyID*, *ID, version* and *name*. Default language is Italian ("ita"), but you can also select English as follows:
+
+``` r
+head(list_istatdata(lang = "eng"))
+
+#>   agencyId                               ID version                                   Name
+#> 1      IT1                         101_1015     1.0                                  Crops
+#> 2      IT1  101_1015_DF_DCSP_COLTIVAZIONI_1     1.0              Areas and production -...
+#> 3      IT1 101_1015_DF_DCSP_COLTIVAZIONI_10     1.0                        Sowing forecast
+#> 4      IT1  101_1015_DF_DCSP_COLTIVAZIONI_2     1.0             Areas and production - ...
+#> 5      IT1                         101_1030     1.0      PDO, PGI and TSG quality products
+#> 6      IT1        101_1030_DF_DCSP_DOPIGP_1     1.0                    Operators by sector
+```
+
+If you find the data that you were looking for, take note of its ***agencyId***, ***ID*** and ***version***: you will need them to download it through *get_istatdata*.
+
+### [search_istatdata]{style="color:navy"}
+
+If you are looking for a specific data set, you can search it by keywords. Let's suppose you are looking for data about 'water'. You can search it as follows (as before, default language is Italian) as follows:
+
+``` r
+search_istatdata("water", lang = "eng")
+
+#>      agencyId       id                   version   name
+#> [1,] "IT1" "12_323_DF_DCCV_IMPDEP_1"        "1.0" "Urban wastewater treatment plants(...)"
+#> [2,] "IT1" "12_323_DF_DCCV_IMPDEP_2"        "1.0" "Urban wastewater treatment plants(...)" 
+#> [3,] "IT1" "12_340_DF_DCCV_PRELACQ_1"       "1.0" "Water abstraction for drinkable use"
+#> [4,] "IT1" "12_60_DF_DCCV_CONSACQUA_2"      "1.0" "Public water supply use(...)"
+#> [5,] "IT1" "18_635_DF_DCCV_CENERG_8"        "1.0" "Water system-availability (...)"
+#> [6,] "IT1" "18_635_DF_DCCV_CENERG_9"        "1.0" "Water system-Type (...)"
+#> [7,] "IT1" "609_1_DF_DCCV_URBANENV_1"       "1.0" "Water - consumption" 
+#> [8,] "IT1" "609_1_DF_DCCV_URBANENV_2"       "1.0" "Water - rationing"
+#> [9,] "IT1" "82_87_DF_DCCV_AVQ_FAMIGLIE_19"  "1.0" "House costs, water and other (...)" 
+#>[10,] "IT1" "83_85_DF_DCCV_AVQ_PERSONE1_211" "1.0" "Water and carbonate beverages (...)"
+#>[11,] "IT1" "83_85_DF_DCCV_AVQ_PERSONE1_212" "1.0" "Water and carbonate beverages (...)"
+#>[12,] "IT1" "83_85_DF_DCCV_AVQ_PERSONE1_213" "1.0" "Water and carbonate beverages (...)"
+#>[13,] "IT1" "83_85_DF_DCCV_AVQ_PERSONE1_214" "1.0" "Water and carbonate beverages (...)"
+#>[14,] "IT1" "9_951_DF_DCCV_CAVE_MIN_4"       "1.0" "Natural mineral waters extracted (...)"
+```
+
+You decide that you want to download "*Public water supply use - municipalities*" data set. You will need its ***agencyId***, ***id*** and ***version***, which are, respectively, *"IT1"*, *"12_60_DF_DCCV_CONSACQUA_2"*, and *"1.0"* (this data set will be used as an example).
+
+### [get_istatdata]{style="color:navy"}
+
+``` r
+get_istatdata(agencyId = "IT1",
+              dataset_id = "12_60_DF_DCCV_CONSACQUA_2",
+              version = "1.0",
+              start = NULL,
+              end = NULL,
+              recent = FALSE,
+              csv = FALSE,
+              xlsx = FALSE)
+```
+
+This code downloads the entire data set, without any filter, but you can customize it through the parameters of the function:
+
+-   ***agencyId***, ***dataset_id*** and ***version***: data set parameters that can be found through *list_istatdata* or *search_istatdata*.
+
+-   ***start***: time value for the start (NULL by default).
+
+-   ***endì***: time value for the end (NULL bu default).
+
+-   ***recent***: false by default, if TRUE, the function retrieves data from last 10 years.
+
+-   ***csv*** or ***xlsx***: false by default, if TRUE, the function saves the data set to directory as .csv/.xlsx.
+
+Note that if *recent* is TRUE, then both *start_period* and *end_period* has to be NULL, and viceversa. Moreover, "lang" parameter can't be specified, since this version of the package can't retrieve IstatData data sets' labels.
+
+## [Filter your data]{style="color:navy"}
+
+The package offers you the possibility to filter data set through the function filter_istat; filter_istat_interactive is the same function but interactive. To show how they work, we will use 'iris' data.
+
+### [filter_istat]{style="color:navy"}
+
+You can filter a data set by selecting the *column(s)* to filter, and then selecting for which value of the column to filter the data set through *datatype*. In this example, we filtered for one column:
+
+``` r
+data(iris)
+filter_istat(iris, columns = "Species", datatype = "setosa")
+
+#>    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#> 1           5.1         3.5          1.4         0.2  setosa
+#> 2           4.9         3.0          1.4         0.2  setosa
+#> 3           4.7         3.2          1.3         0.2  setosa
+#> 4           4.6         3.1          1.5         0.2  setosa
+#> 5           5.0         3.6          1.4         0.2  setosa
+#> 6           5.4         3.9          1.7         0.4  setosa
+#>  ... 
+```
+
+Now, let's filter for more than one column:
+
+``` r
+data(iris)
+filter_istat(iris, columns = c("Species", "Petal.Length"), datatype = c("setosa", "1.5"))
+
+#>   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#> 4           4.6         3.1          1.5         0.2  setosa
+#> 8           5.0         3.4          1.5         0.2  setosa
+#> 10          4.9         3.1          1.5         0.1  setosa
+#> 11          5.4         3.7          1.5         0.2  setosa
+#> 16          5.7         4.4          1.5         0.4  setosa
+#> 20          5.1         3.8          1.5         0.3  setosa
+#> 22          5.1         3.7          1.5         0.4  setosa
+#> 28          5.2         3.5          1.5         0.2  setosa
+#> 32          5.4         3.4          1.5         0.4  setosa
+#> 33          5.2         4.1          1.5         0.1  setosa
+#> 35          4.9         3.1          1.5         0.2  setosa
+#> 40          5.1         3.4          1.5         0.2  setosa
+#> 49          5.3         3.7          1.5         0.2  setosa
+```
+
+And for more than one value per column:
+
+``` r
+filter_istat(iris, columns = c("Species","Petal.Width"),  datatype = list(c("virginica","setosa"), c("0.1","1.9")))
+
+#>     Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
+#> 10           4.9         3.1          1.5         0.1    setosa
+#> 13           4.8         3.0          1.4         0.1    setosa
+#> 14           4.3         3.0          1.1         0.1    setosa
+#> 33           5.2         4.1          1.5         0.1    setosa
+#> 38           4.9         3.6          1.4         0.1    setosa
+#> 102          5.8         2.7          5.1         1.9 virginica
+#> 112          6.4         2.7          5.3         1.9 virginica
+#> 131          7.4         2.8          6.1         1.9 virginica
+#> 143          5.8         2.7          5.1         1.9 virginica
+#> 147          6.3         2.5          5.0         1.9 virginica
+```
+
+Here, the function filtered the data set 'iris' for the values 'virginica' and 'setosa' of the column 'Species' and for the values '0.1' and '1.9' of the column 'Petal.Width'.
+
+### [filter_istat_interactive]{style="color:navy"}
+
+This function works the same as the previous one, with the difference that in this case you will be guided through the filtering process. An example:
+
+``` r
+filter_istat_interactive(iris, lang = "eng")
+
+#> Available columns:
+#> [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
+#> Enter the column(s) (separated by comma): Petal.Width, Species
+#> Available values for column Petal.Width :
+#>  [1] 0.2 0.4 0.3 0.1 0.5 0.6 1.4 1.5 1.3 1.6 1.0 1.1 1.8 1.2 1.7 2.5 1.9 2.1 2.2 2.0 2.4 2.3
+#> Enter the chosen values for column Petal.Width (separated by comma): 0.1
+#> Available values for column Species :
+#> [1] setosa     versicolor virginica 
+#> Levels: setosa versicolor virginica
+#> Enter the chosen values for column Species (separated by comma): setosa
+#>    Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#> 10          4.9         3.1          1.5         0.1  setosa
+#> 13          4.8         3.0          1.4         0.1  setosa
+#> 14          4.3         3.0          1.1         0.1  setosa
+#> 33          5.2         4.1          1.5         0.1  setosa
+#> 38          4.9         3.6          1.4         0.1  setosa
+```
+
+## [Plot your data]{style="color:navy"}
+
+The function ***plot_interactive*** allows you to graphically visualize your data, and it is intended to be use with exploratory purposes only. The available plots are:
+
+-   ***scatter plot***
+
+    ``` r
+    plot_interactive(iris)
+
+    #> > plot_interactive(iris)
+    #> Available plots:
+    #> 1: Scatter Plot
+    #> 2: Bar plot
+    #> 3: Pie chart
+    #> Choose type of plot (1, 2 or 3): 1
+    #> Available variables:
+    #> [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
+    #> Variable X (insert name): Sepal.Length
+    #> Variable Y (insert name): Sepal.Width
+    #> Grouping variable (optional, press enter if not necessary): Species
+    ```
+
+-   ***bar plot***
+
+    ``` r
+    plot_interactive(iris)
+
+    #> Available plots:
+    #> 1: Scatter Plot
+    #> 2: Bar plot
+    #> 3: Pie chart
+    #> Choose type of plot (1, 2 or 3): 2
+    #> Available variables:
+    #> [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
+    #> Variable X (insert name): Species
+    #> Variable Y (insert name): Petal.Length
+    #> Grouping variable (optional, press enter if not necessary): 
+    ```
+
+-   ***pie chart***
+
+    ``` r
+    plot_interactive(iris)
+
+    #> Available plots:
+    #> 1: Scatter Plot
+    #> 2: Bar plot
+    #> 3: Pie chart
+    #> Choose type of plot (1, 2 or 3): 3
+    #> Available variables:
+    #> [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width"  "Species"     
+    #> Choose the variable for pie chart: Species
+    ```
+
+## [shinyIstat]{style="color:navy"}
+
+***shinyIstat*** is a shiny application which integrates the functions of the *istat* package in a user friendly interface. This app aims to provide a useful tool to search, get, filter and plot those data sets. Here are the main features:
+
+-   **List** available data sets or search for data sets using keywords by selecting **Available datasets** in the sidebar. You can choose to use *I.Stat* or *IstatData* as the source.
+
+-   **Download** data sets by providing an *ID* and selecting a date range in **Get dataset**. You can choose to use *I.Stat* or *IstatData* as the source.
+
+-   **Filter** data sets by selecting **Filter**. You can upload a *.xlsx* file or select a data set from the environment.
+
+-   **Visualize** data by selecting **Plots**. You can choose between *scatter plot*, *bar plot* and *pie chart*. Note that this function it's intended to be used with exploratory purpose only.
+
+Use the menu on the left to navigate through the app. Inside each panel you will find further help by simply clicking on the green question marks [**?**]{style="color:green"}.
